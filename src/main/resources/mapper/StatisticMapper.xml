@@ -5,17 +5,26 @@
 
 <mapper namespace="com.demo.comentoStatistic.dao.StatisticMapper">
 
-    <select id="selectYearLogin" parameterType="string" resultType="YearCountDto">
+    <select id="selectYearLogin" parameterType="string" resultType="com.demo.comentoStatistic.dto.YearCountDto">
         select concat('20', #{year}) as year, count(*) as totCnt
         from statistic.requestInfo ri
         where left(ri.createDate, 2) = #{year};
     </select>
 
-
-    <select id="selectYearMonthLogin" parameterType="string" resultType="YearMonthCountDto">
+    <select id="selectYearMonthLogin" parameterType="string" resultType="com.demo.comentoStatistic.dto.YearMonthCountDto">
         select concat('20', #{yearMonth}) as yearMonth, count(*) as totCnt
         from statistic.requestInfo ri
         where left(ri.createDate, 4) = #{yearMonth};
+    </select>
+
+    <select id="selectWorkingDayLoginCount" resultType="int">
+        SELECT COUNT(*)
+        FROM login_log
+        WHERE DATE_FORMAT(login_date, '%Y%m') = #{yearMonth}
+        AND DAYOFWEEK(login_date) NOT IN (1, 7)
+        AND login_date NOT IN (
+        SELECT holiday_date FROM holidays
+        )
     </select>
 
 </mapper>
